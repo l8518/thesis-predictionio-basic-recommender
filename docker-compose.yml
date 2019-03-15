@@ -1,0 +1,37 @@
+version: "3.3"
+
+services:
+  app:
+    build: .
+    volumes:
+    - ./:/home/pio/app/src
+    - ~/.ssh:/home/pio/.ssh
+    ports:
+      - 9000:9000
+      - 8000:8000
+      - 7070:7070
+    environment:
+      # base
+      PIO_STORAGE_SOURCES_PGSQL_TYPE: jdbc
+      PIO_STORAGE_SOURCES_PGSQL_URL: "jdbc:postgresql://postgres/pio"
+      PIO_STORAGE_SOURCES_PGSQL_USERNAME: pio
+      PIO_STORAGE_SOURCES_PGSQL_PASSWORD: pio
+      # event
+      PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME: pio_event
+      PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE: PGSQL
+      # meta
+      PIO_STORAGE_REPOSITORIES_METADATA_NAME: pio_meta
+      PIO_STORAGE_REPOSITORIES_METADATA_SOURCE: PGSQL
+      # model
+      PIO_STORAGE_REPOSITORIES_MODELDATA_NAME: pio_model
+      PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE: PGSQL
+      # test warm up
+      BASIC_REC_WARM_UP_DELAY: 15
+
+  postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: pio
+      POSTGRES_PASSWORD: pio
+      POSTGRES_DB: pio
+      POSTGRES_INITDB_ARGS: --encoding=UTF8
